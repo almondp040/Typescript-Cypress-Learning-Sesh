@@ -109,3 +109,46 @@ userRole2 = "guest" //Will work!
 
 //Use Type
 let admin: userRole = "admin"
+
+//Try and be as explicit as we can when writing our code, so we should add extra protections via typeOf
+
+//Function return types Example
+
+type User = {
+    username: string; 
+    role: userRole; 
+}
+
+const currentUsers: User[] = [
+    {username: "Almond Paschal", role: "admin"}, 
+    {username: "Austin Paschal", role: "guest"}, 
+    {username: "Cooper Paschal", role: "read-only"}, 
+]; 
+
+
+//Write a function to grab user details based off of the username: 
+//Force the function to return the User Object using the Type User: 
+//If there is a user cool! if not it will be undefined
+const grabUserDetails = (username: string): User | undefined =>{
+  const findUser = currentUsers.find((user)=>{
+        if (user && user.username === username) {
+            return user 
+        } else {
+            throw new Error("User Not Found!");
+        }
+    });   
+    return findUser
+}
+
+const findMe = grabUserDetails("Almond Paschal"); 
+console.log(findMe);
+
+//TS Any Type: 
+//Any variables, objs, or functions with the Any type essentially turns off TS
+//You shouldn't really use Any at all, if possible, but if you are in the process of converting JS to TS and is short on time, then you can add Any
+
+
+//Good Practice tip always provide an explicit return type to our functions!
+
+
+//Utility Types for Tomorrow: 1:32:01 for https://www.youtube.com/watch?v=SpwzRDUQ1GI&t=76s
