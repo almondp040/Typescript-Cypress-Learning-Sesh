@@ -11,6 +11,8 @@ type Pizza = {
     price: number;
 };
 
+
+
 type Order = {
     ID: number;
     pizza: Pizza;
@@ -36,18 +38,32 @@ const menu: Pizza[] = [
 
 //Add a utility function called addNewPizza that takes a new pizza and adds it to the menu: 
  // Initialize order ID counter
-const addNewPizza = (pizza: Pizza): void => {
-    //Push the ID into the pizza if no ID is provided! 
+// const addNewPizza = (pizza: Omit<Pizza, "id">): Pizza => {
+//     //Push the ID into the pizza if no ID is provided! 
 
-    
-        pizza.id = pizzaID++
-    
-    menu.push(pizza);
-    console.log(`Added new pizza: ${pizza.name} at $${pizza.price}`);
-    console.log("Updated Menu:", menu);
+//     const { name, price } = pizza;
+//     const newPizza = {
+//         id: pizzaID++,
+//         name,
+//         price
+//     }
+   
+//     menu.push(newPizza);
+//     console.log(`Added new pizza: ${newPizza.name} at $${newPizza.price}`);
+//     console.log("Updated Menu:", menu);
+//     return newPizza;
+// }
+
+// addNewPizza({name:"BBQ Chicken", price: 11.0});
+
+//Use a generic to make everything generic so we can make helper functions!
+const addPizzaWithGenerics = <Type>(array: Type[], item:Type): Type[] =>{
+    array.push(item)
+    return array; 
 }
 
-//addNewPizza("BBQ Chicken", 11.0);
+addPizzaWithGenerics<Pizza>(menu, {id: pizzaID++, name: "Vodka", price: 10}); 
+addPizzaWithGenerics<Order>(orderQueue, {ID: 1, pizza: menu[2], status:"complete"}); 
 
 //Add another function that allows us to place a order for a pizza from the menu:
 //Finds a pizza by name, then we add the price to the cash in register once we find a match
@@ -55,89 +71,50 @@ const addNewPizza = (pizza: Pizza): void => {
 //Finally the function should return the new order just in case we need it
 
 
-const placeOrder = (pizzaOrder: Order): Order | undefined => {
-    
-    //Loop through our menu array to make sure the Order name we give this function matches! 
-    for (const item of menu) {
-        if (item.name === pizzaOrder.pizza.name) {
-            let generateID = item.id += 1;
-            pizzaOrder.ID = generateID;
-            cashInRegister += item.price;
-            const newOrder = { ID: pizzaOrder.ID, pizza: item, status: pizzaOrder.status };
-            console.log("Placed Order:", newOrder);
-            console.log("Updated Cash in Register: $", cashInRegister);
-            orderQueue.push(newOrder);
-            return newOrder;
-        } else {
-            console.error(`Sorry, we don't have ${pizzaOrder.pizza.name} on the menu.`);
-        }
+const placeOrder = (pizzaName: string): Order | undefined => {
+    // Find the pizza in the menu by name
+    const pizza = menu.find(item => item.name === pizzaName);
+    if (!pizza) {
+        console.error(`Sorry, we don't have ${pizzaName} on the menu.`);
+        return undefined;
     }
-}; 
+    const newOrder: Order = {
+        ID: ++orderID,
+        pizza,
+        status: "ordered"
+    };
+    cashInRegister += pizza.price;
+    console.log("Placed Order:", newOrder);
+    console.log("Updated Cash in Register: $", cashInRegister);
+    orderQueue.push(newOrder);
+    return newOrder;
+};
 
-// placeOrder("Pepperoni");
+placeOrder("Pepperoni");
 // placeOrder("Hawaiian");
 // placeOrder("Veggie");
 
 //Complete Order Utility Function that takes in a order ID, and then will update the status of the newOrder to complete
-const completeOrder = (orderID: Order): Order | undefined => {
+const completeOrder = (orderID: number): Order | undefined => {
     console.log("Current Order Queue from Complete Order: ",orderQueue)
 
     for (const order of orderQueue) {
-        if (order.ID === orderID.ID) {
+        if (order.ID === orderID) {
             order.status = "complete";
-            console.log(`Order ID ${orderID.ID} is now complete.`);
+            console.log(`Order ID ${orderID} is now complete.`);
             console.log("Updated Order:", order);
             return order;
         }
     }
 };
 
-// completeOrder(1);
+ completeOrder(1);
 // completeOrder(2);
 // completeOrder(3);
 
-//Make a function that will run operations in the pizza app! 
-const runPizzaApp = (operation: string,  newPizzaOrder: Order): 
-    Order |"No Pizza Operation has been provided!"|undefined => {
-    console.log("What would you like for the pizza app to do?")
-
-    //If we want to add our app to add a new pizza
-    if (operation === "addNewPizza") {
-        newPizzaOrder.pizza.id = pizzaID++
-      addNewPizza(newPizzaOrder.pizza);
-        
-    }
-
-    //If we want to place an order
-    if (operation === "placeOrder") {
-      return  placeOrder(newPizzaOrder);
-    }
-
-    //If we want to complete an order
-    if (operation === "completeOrder" && newPizzaOrder.pizza.id !== 0) {
-       return completeOrder(newPizzaOrder);
-    }
-
-    if (!operation) {
-        return "No Pizza Operation has been provided!"
-    }
-
-
-}
-
-//Pizza App Operations!
-let newPizza1 = {name: "Buffalo Chicken", price: 11.0};
-let newPizza2 = {name: "Blue Cheese", price: 14.0};
-let placedOrder1: Order = {ID: 0 , pizza: newPizza1, status: "ordered"};
-let placedOrder2: Order = {ID: 0 , pizza: newPizza2, status: "ordered"};
-let completeOrder1: Order = {ID: 1 , pizza: newPizza1, status: "complete"};
 
 
 
-const addBuffalo = runPizzaApp("addNewPizza", placedOrder1);
-const addBlueCheese = runPizzaApp("addNewPizza", placedOrder2);
-const placeBuffaloOrder = runPizzaApp("placeOrder", placedOrder1);
-const completeBuffaloOrder = runPizzaApp("completeOrder", completeOrder1);
 
 //Write a function to grab the pizza details, that will have a parameter called identifier 
 // and this can be either the name or ID of the pizza

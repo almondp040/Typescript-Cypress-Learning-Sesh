@@ -115,14 +115,17 @@ let admin: userRole = "admin"
 //Function return types Example
 
 type User = {
+    id: number; 
     username: string; 
     role: userRole; 
 }
 
+type UpdatedUser = Partial<User>;
+let userID = 1
 const currentUsers: User[] = [
-    {username: "Almond Paschal", role: "admin"}, 
-    {username: "Austin Paschal", role: "guest"}, 
-    {username: "Cooper Paschal", role: "read-only"}, 
+    {id: userID++, username: "Almond Paschal", role: "admin"}, 
+    {id: userID++, username: "Austin Paschal", role: "guest"}, 
+    {id: userID++, username: "Cooper Paschal", role: "read-only"}, 
 ]; 
 
 
@@ -141,7 +144,7 @@ const grabUserDetails = (username: string): User | undefined =>{
 }
 
 const findMe = grabUserDetails("Almond Paschal"); 
-console.log(findMe);
+//console.log(findMe);
 
 //TS Any Type: 
 //Any variables, objs, or functions with the Any type essentially turns off TS
@@ -149,6 +152,68 @@ console.log(findMe);
 
 
 //Good Practice tip always provide an explicit return type to our functions!
+//Write a function that takes in a obj, and with object.assign we can update the user we find. 
+
+const updateUser = (id: number, updates: UpdatedUser): User | undefined =>{
+    //target is going to come from .find(), then use object.assign() to spit out a new obj with our updates
+   return currentUsers.find((user)=>{
+        if (user.id === id) {
+            //console.log(user); 
+
+            const assign = Object.assign(user, updates); 
+            console.log(assign)
+            return assign; 
+        }
+ 
+    })
+}
+
+updateUser(2, {role: "admin"}); 
+updateUser(1, {username: "John Doe"}); 
+
+//Utility Types: 
+//Like a function, they can take other types in as a parameter and return a new type with some changes to it
+//Built in to TS; to perform commonly-needed modifications to existing types
+//In the example above to avoid using Any for updates, we made a utility type for the updates, so that we can modify the existing type
 
 
-//Utility Types for Tomorrow: 1:32:01 for https://www.youtube.com/watch?v=SpwzRDUQ1GI&t=76s
+//Partial Type, (USES GENERICS!)
+//This modifies the type you pass in and turns all properties into optional properties, 
+// so instead of a updated type, partial allows us to use what we need
+
+//Omit Utility Type Challenge and Example: 
+//What does the Omit Type Do? 
+//Omit takes in a type AND a string (can also be a union of strings) property names 
+// and returns a new type with those properties removed
+
+//Allows the function to handle the ID instead of forcing us to provide it: 
+const addNewUser = (newUser: Omit<User, "id">): User =>{
+    let user: User = {id: userID++, ...newUser}
+     currentUsers.push(user)
+     return user
+}
+
+addNewUser({username: "joe", role: "guest"})
+
+console.log(currentUsers)
+
+
+//Generics
+//Allows us to add some flexibility to existing functions, types, etc. 
+//Acts like function parameters, but for types! 
+
+//Generics Example: 
+
+const gameScores = [14, 21, 33, 42, 59]; 
+const favoriteThings = ["Rain drops on roses", "whiskers on kittens"]
+const voters = [{name: "Alice", age: 43}, {name: "Bob", age: 77}]
+
+//Find the last item in an array: We can use Generics and then we can define what the type actuall is
+const findLast = <Array> (array: Array[]): Array | undefined=>{
+
+    return array[array.length -1]
+}
+
+findLast(gameScores)
+findLast(favoriteThings)
+findLast(voters)
