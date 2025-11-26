@@ -1,5 +1,6 @@
 # Day 2 Cypress Study Sesh! 
-
+- link: https://www.youtube.com/watch?v=u8vMu7viCm8&t=16s
+- time: 1:11:46
 - beforeEach()
     - Allows us to run a function before each individual test! 
     - We can also run before()
