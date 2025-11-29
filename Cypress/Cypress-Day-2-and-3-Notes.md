@@ -76,6 +76,28 @@
         })
     });
 
+        Another Example of using cy.request() which is probably easier to understand: 
+    
+    Ignore Context for now
+
+    context("POST /bankAccounts", function () {
+    it("creates a new bank account", function () {
+      const { id: userId } = ctx.authenticatedUser!;
+
+      cy.request("POST", `${apiBankAccounts}`, {
+        bankName: `${faker.company.companyName()} Bank`,
+        accountNumber: faker.finance.account(10),
+        routingNumber: faker.finance.account(9),
+      }).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body.account.id).to.be.a("string");
+        expect(response.body.account.userId).to.eq(userId);
+      });
+    });
+  });
+
+
+
 
     - And we can use aliases with this as well!
     - Useful for API call testing! 
